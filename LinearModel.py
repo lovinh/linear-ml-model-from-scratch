@@ -4,16 +4,15 @@ import numpy as np
 from LossFunction import MSE
 import matplotlib.pyplot as plt
 
-class MyLinearRegression(BaseEstimator):
+class MyLinearRegression():
     def __init__(self, eta: float = 1, tol: float = 1e-6, max_iters: int = 1000, fit_intercept: bool = True) -> None:
         self.__coef : np.ndarray = None
         self.__eta : float = eta
         self.__tol : float  = tol
         self.__n_iters : int = max_iters
         self.__fit_intercept : bool = fit_intercept
-        super().__init__()
 
-    def fit(self, X, y):
+    def fit_with_BGD(self, X, y):
         self.__X : np.ndarray = X
         X_train : np.ndarray = X
         self.__y : np.ndarray = y
@@ -35,7 +34,6 @@ class MyLinearRegression(BaseEstimator):
 
         # Iterations
         for epoch in range(self.__n_iters):
-            print(f"Epoch {epoch}: Before Loss = {loss}\nCoef = {self.coef}")
             for j in range(len(gradients_coef)):
                 sum = 0
                 for i in range(n_instances):
@@ -54,10 +52,16 @@ class MyLinearRegression(BaseEstimator):
             if (best_loss > loss):
                 best_loss = loss
 
-            print(f"Epoch {epoch}: After Loss = {loss}\nCoef = {self.coef}\nBest Loss = {best_loss}")
+            print(f"Epoch {epoch}: After Loss = {loss[0]}")
+        
+        self.__X = X_train
 
     def predict(self, X: np.ndarray):
-        pass
+        if (self.__fit_intercept):
+            X_predict = np.c_[np.ones((len(X), 1)), X]
+        else:
+            X_predict = X
+        return self.coef.T.dot(X_predict.T)
 
     @property
     def coef(self) -> np.ndarray:
@@ -66,3 +70,55 @@ class MyLinearRegression(BaseEstimator):
     @property
     def n_features(self) -> int:
         return self.__n_features
+    
+class MySGDRegression():
+    def __init__(self, t0 : float = 1, t1 : float = 1, tol : float = 0, max_iters : int = 100, fit_intercept : bool = True) -> None:
+        self.__t0 = t0
+        self.__t1 = t1
+        self.__tol = tol
+        self.__max_iters = max_iters
+        self.__fit_intercept = fit_intercept
+
+    def fit(self, X : np.ndarray, y : np.ndarray):
+        self.__X : np.ndarray = X
+        X_train : np.ndarray = X
+        self.__y : np.ndarray = y
+        n_instances = len(self.__X)
+
+        if (self.__fit_intercept):
+            X_train = np.c_[np.ones((n_instances, 1)), self.__X]
+        
+        self.__n_features : int = len(X_train[0])
+
+        # Using Stochastic Gradient Descent (SGD) to optimize the loss function
+        # Using the MSE (Mean Square Error) loss function
+        
+        # Initialize the non-training model's parameters
+        self.__coef = np.random.randn(self.n_features, 1)
+        loss = MSE(self.coef, X_train, self.__y)
+        best_loss = MSE(self.coef, X_train, self.__y)
+        
+        # Iteration:
+        for epoch in range(len(self.__max_iters)):
+            for i 
+
+        print(loss)
+
+    def predict(self, X: np.ndarray):
+        if (self.__fit_intercept):
+            X_predict = np.c_[np.ones((len(X), 1)), X]
+        else:
+            X_predict = X
+        return self.coef.T.dot(X_predict.T)
+
+    def __learning_schedules(self, t):
+        return self.__t0 / (t + self.__t1)
+
+    @property
+    def coef(self) -> np.ndarray:
+        return self.__coef
+    
+    @property
+    def n_features(self):
+        return self.__n_features
+
