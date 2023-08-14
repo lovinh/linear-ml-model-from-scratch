@@ -87,10 +87,8 @@ class MySGDRegression():
         X_train: np.ndarray = X
         self.__y: np.ndarray = y
         n_instances = len(self.__X)
-
         if (self.__fit_intercept):
             X_train = np.c_[np.ones((n_instances, 1)), self.__X]
-
         self.__n_features: int = len(X_train[0])
 
         # Using Stochastic Gradient Descent (SGD) to optimize the loss function
@@ -98,33 +96,30 @@ class MySGDRegression():
 
         # Initialize the non-training model's parameters
         self.__coef = np.random.randn(self.n_features, 1)
-        gradients_coef = np.zeros(self.__coef.shape)
+        gradients_coef = 0
         loss = MSE(self.coef, X_train, self.__y)
         best_loss = MSE(self.coef, X_train, self.__y)
 
-        print(X_train)
         # Iteration:
         for epoch in range(self.__max_iters):
             for i in range(n_instances):
                 index = np.random.randint(0, n_instances)
                 X_index = X_train[index:index + 1]
                 y_index = self.__y[index:index + 1]
-                for j in range(self.__n_features):
-                    gradients_coef[j] = 2 * (self.__coef.T.dot(X_index.T) - y_index[0]) * X_index[0][j]
-                
+                gradients_coef = 2 * X_index.T.dot(self.__coef.T.dot(X_index.T) - y_index[0])
                 eta = self.__learning_schedules(epoch * n_instances + i)
 
                 # Update the coef and intercept
                 self.__coef -= eta * gradients_coef
                 loss = MSE(self.coef, X_train, self.__y)
 
-            # Check for tolerance break
-            if (abs(loss - best_loss) < self.__tol):
-                break
+                # Check for tolerance break
+                if (abs(loss - best_loss) < self.__tol):
+                    return
 
-            # Update best loss
-            if (best_loss > loss):
-                best_loss = loss
+                # Update best loss
+                if (best_loss > loss):
+                    best_loss = loss
 
             print(f"Epoch {epoch}: After Loss = {loss[0]}")
 
