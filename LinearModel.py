@@ -7,12 +7,16 @@ import matplotlib.pyplot as plt
 BATCH_NUMBER_DEFAULT = 5
 
 class MyLinearRegression():
-    def __init__(self, eta: float = 1, tol: float = 1e-6, max_iters: int = 1000, fit_intercept: bool = True) -> None:
+    def __init__(self, eta: float = 1, tol: float = 1e-6, max_iters: int = 1000, fit_intercept: bool = True, save_loss_log : bool = False) -> None:
         self.__coef: np.ndarray = None
         self.__eta: float = eta
         self.__tol: float = tol
         self.__n_iters: int = max_iters
         self.__fit_intercept: bool = fit_intercept
+        if (save_loss_log):
+            self.__loss_log = []
+        else:
+            self.__loss_log = None
     def __str__(self) -> str:
         pass
     def fit_with_BGD(self, X, y):
@@ -58,6 +62,9 @@ class MyLinearRegression():
 
             print(f"Epoch {epoch}: After Loss = {loss[0]}")
 
+            if (self.__loss_log != None):
+                self.__loss_log.append([epoch, loss[0]])
+
         self.__X = X_train
 
     def predict(self, X: np.ndarray):
@@ -74,6 +81,10 @@ class MyLinearRegression():
     @property
     def n_features(self) -> int:
         return self.__n_features
+    
+    @property
+    def loss_log(self) -> list[list[int, float]]:
+        return self.__loss_log
 
 
 class MySGDRegression():
