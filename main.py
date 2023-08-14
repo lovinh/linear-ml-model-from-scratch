@@ -10,19 +10,21 @@ y = [[170, 168, 166, 175, 185, 150, 153, 161, 169, 171]]
 X = np.array(X)
 y = np.array(y).T
 
-X = 2 * np.random.rand(100, 3)
-y = X.dot(np.array([[4],[-2],[10]])) + np.random.randn(100, 1)
+X = 2 * np.random.rand(100, 1)
+X_new = np.c_[np.ones((100, 1)), X]
+y = X_new.dot(np.array([[4],[3]])) + np.random.randn(100, 1)
+print(y)
 
 if __name__ == "__main__":
     # model = MyLinearRegression(tol=0.001, eta=0.1, max_iters=3000, fit_intercept=False)
     # model.fit_with_BGD(X, y)
     # print(model.predict(X))
     # print(model.coef)
-    model = MySGDRegression(t0 = 5, t1 = 50, tol=0.0001, max_iters=50, fit_intercept=False)
-    model.fit(X, y)
-    print(model.predict(X))
-    print(model.coef)
-    model = MyMiniBatchRegression(t0 = 5, t1 = 50, tol=0.00000000001, max_iters=50, fit_intercept=False, batch_size= -1)
+    # model = MySGDRegression(t0 = 5, t1 = 50, tol=0.0001, max_iters=50, fit_intercept=True)
+    # model.fit(X, y)
+    # print(model.predict(X))
+    # print(model.coef)
+    model = MyMiniBatchRegression(t0 = 5, t1 = 50, tol=0.000001, max_iters=50, fit_intercept=True, batch_size= -1)
     model.fit(X, y)
     print(model.predict(X))
     print(model.coef)

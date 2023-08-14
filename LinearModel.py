@@ -13,7 +13,8 @@ class MyLinearRegression():
         self.__tol: float = tol
         self.__n_iters: int = max_iters
         self.__fit_intercept: bool = fit_intercept
-
+    def __str__(self) -> str:
+        pass
     def fit_with_BGD(self, X, y):
         self.__X: np.ndarray = X
         X_train: np.ndarray = X
