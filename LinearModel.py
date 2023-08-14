@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 BATCH_NUMBER_DEFAULT = 5
 
 class MyLinearRegression():
-    def __init__(self, eta: float = 1, tol: float = 1e-6, max_iters: int = 1000, fit_intercept: bool = True, save_loss_log : bool = False) -> None:
+    def __init__(self, eta: float = 1, tol: float = 1e-6, max_iters: int = 1000, fit_intercept: bool = True, save_loss_log : bool = False, log_msg : bool = False) -> None:
         self.__coef: np.ndarray = None
         self.__eta: float = eta
         self.__tol: float = tol
@@ -17,6 +17,7 @@ class MyLinearRegression():
             self.__loss_log = []
         else:
             self.__loss_log = None
+        self.__log_msg = log_msg
     def __str__(self) -> str:
         pass
     def fit_with_BGD(self, X, y):
@@ -60,7 +61,8 @@ class MyLinearRegression():
             if (best_loss > loss):
                 best_loss = loss
 
-            print(f"Epoch {epoch}: After Loss = {loss[0]}")
+            if (self.__log_msg):
+                print(f"Epoch {epoch}: After Loss = {loss[0]}")
 
             if (self.__loss_log != None):
                 self.__loss_log.append([epoch, loss[0]])
@@ -88,12 +90,17 @@ class MyLinearRegression():
 
 
 class MySGDRegression():
-    def __init__(self, t0: float = 1, t1: float = 1, tol: float = 0, max_iters: int = 100, fit_intercept: bool = True) -> None:
+    def __init__(self, t0: float = 1, t1: float = 1, tol: float = 0, max_iters: int = 100, fit_intercept: bool = True, save_loss_log : bool = False, log_msg : bool = False) -> None:
         self.__t0 = t0
         self.__t1 = t1
         self.__tol = tol
         self.__max_iters = max_iters
         self.__fit_intercept = fit_intercept
+        self.__log_msg = log_msg
+        if (save_loss_log):
+            self.__loss_log = []
+        else:
+            self.__loss_log = None
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.__X: np.ndarray = X
@@ -134,7 +141,11 @@ class MySGDRegression():
                 if (best_loss > loss):
                     best_loss = loss
 
-            print(f"Epoch {epoch}: After Loss = {loss[0]}")
+            if (self.__log_msg):
+                print(f"Epoch {epoch}: After Loss = {loss[0]}")
+
+            if (self.__loss_log != None):
+                self.__loss_log.append([epoch, loss[0]])
 
     def predict(self, X: np.ndarray):
         if (self.__fit_intercept):
@@ -154,14 +165,23 @@ class MySGDRegression():
     def n_features(self):
         return self.__n_features
 
+    @property
+    def loss_log(self) -> list[list[int, float]]:
+        return self.__loss_log
+
 class MyMiniBatchRegression():
-    def __init__(self, t0: float = 1, t1: float = 1, batch_size : int = -1, tol: float = 0, max_iters: int = 100, fit_intercept: bool = True) -> None:
+    def __init__(self, t0: float = 1, t1: float = 1, batch_size : int = -1, tol: float = 0, max_iters: int = 100, fit_intercept: bool = True, save_loss_log : bool = False, log_msg : bool = False) -> None:
         self.__t0 = t0
         self.__t1 = t1
         self.__tol = tol
         self.__max_iters = max_iters
         self.__fit_intercept = fit_intercept
         self.__batch_size = batch_size
+        self.__log_msg = log_msg
+        if (save_loss_log):
+            self.__loss_log = []
+        else:
+            self.__loss_log = None
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.__X: np.ndarray = X
@@ -208,7 +228,11 @@ class MyMiniBatchRegression():
                 if (best_loss > loss):
                     best_loss = loss
 
-            print(f"Epoch {epoch}: After Loss = {loss[0]}")
+            if (self.__log_msg):
+                print(f"Epoch {epoch}: After Loss = {loss[0]}")
+
+            if (self.__loss_log != None):
+                self.__loss_log.append([epoch, loss[0]])
 
     def predict(self, X: np.ndarray):
         if (self.__fit_intercept):
@@ -227,3 +251,7 @@ class MyMiniBatchRegression():
     @property
     def n_features(self):
         return self.__n_features
+    
+    @property
+    def loss_log(self) -> list[list[int, float]]:
+        return self.__loss_log
